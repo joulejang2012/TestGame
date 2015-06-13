@@ -94,8 +94,7 @@ public class PlayerBehavior : MonoBehaviour {
 		healthbar = h;
 		healthbar = Instantiate(h, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
 		Text t = healthbar.GetComponentInChildren<Text> ();
-		if (!isPlayer1) 
-		{
+		if (!isPlayer1) {
 			t.text = "Player2 Health";
 			RectTransform rt = t.GetComponent<RectTransform> ();
 			rt.anchorMin = new Vector2 (1.0f, 1.0f);
@@ -109,6 +108,8 @@ public class PlayerBehavior : MonoBehaviour {
 			rs.pivot = new Vector2 (1.0f, 1.0f);
 
 			healthSlider = healthbar.GetComponentInChildren<Slider> ();
+		} else {
+			t.text = "Player1 Health";
 		}
 	}
 	

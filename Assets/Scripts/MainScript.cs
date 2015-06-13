@@ -62,23 +62,11 @@ public class MainScript : MonoBehaviour
 		}
 	}
 
-	void InGame()
-	{
-		// Player Logic
-		player1Behavior.Draw();
-		player2Behavior.Draw();
-
-		// Input
-		CheckPlayer1Input();
-		CheckPlayer2Input();
-	}
-
 	IEnumerator WaitForKeyDown(KeyCode keycode)
 	{
 		while (!Input.GetKeyDown(keycode)) 
 			yield return null;
 		canvas.SetActive(false);
-		PlayGame ();
 	}
 
 	void StartGame()
@@ -87,10 +75,15 @@ public class MainScript : MonoBehaviour
 		StartCoroutine(WaitForKeyDown(KeyCode.Return));
 	}
 
-	void PlayGame()
+	void InGame()
 	{
-		InvokeRepeating("Draw", 0.0f, 0.01f);
-		//end game called by player or enemy if someone dies
+		// Player Logic
+		player1Behavior.Draw();
+		player2Behavior.Draw();
+		
+		// Input
+		CheckPlayer1Input();
+		CheckPlayer2Input();
 	}
 
 	public void EndGame()
@@ -117,22 +110,5 @@ public class MainScript : MonoBehaviour
 		//if (Input.GetKey(KeyCode.W)) player2Behavior.MoveUp();
 		//if (Input.GetKey(KeyCode.S)) player2Behavior.MoveDown();
 		if (Input.GetKeyDown(KeyCode.LeftShift)) player2Behavior.Fire();
-	}
-
-	public GameObject GetPlayer()
-	{
-		return player1;
-	}
-	public GameObject GetEnemy()
-	{
-		return player2;
-	}
-	public GameObject GetHealth()
-	{
-		return HealthOb;
-	}
-	public GameObject GetBullet()
-	{
-		return bulletOb;
 	}
 }
