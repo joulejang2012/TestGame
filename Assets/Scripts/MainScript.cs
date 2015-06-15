@@ -25,12 +25,12 @@ public class MainScript : MonoBehaviour
 		canvas.SetActive (true);
 
 		player1Behavior = player1.GetComponent<PlayerBehavior>();
-		player1Behavior.SetMainScript (this, HealthOb, player2, bulletOb);
 		player1Behavior.amIPlayer1 (true);
+		player1Behavior.SetMainScript (this, HealthOb, player2, bulletOb);
 
 		player2Behavior = player2.GetComponent<PlayerBehavior>();
-		player2Behavior.SetMainScript (this, HealthOb, player1, bulletOb);
 		player2Behavior.amIPlayer1 (false);
+		player2Behavior.SetMainScript (this, HealthOb, player1, bulletOb);
 
 		currentGameState = EGameState.StartMenu;
 	}
@@ -88,7 +88,6 @@ public class MainScript : MonoBehaviour
 
 	public void EndGame()
 	{
-		CancelInvoke("Draw");
 		player1Behavior.reset ();
 		player2Behavior.reset ();
 		StartGame ();

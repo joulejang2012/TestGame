@@ -68,8 +68,6 @@ public class PlayerBehavior : MonoBehaviour {
 
 	void checkDead()
 	{
-		//if (health <= 0)
-		//	mainScript.EndGame();
 		if (health <= 0)
 			mainScript.currentGameState = EGameState.EndGame;
 	}
@@ -78,7 +76,7 @@ public class PlayerBehavior : MonoBehaviour {
 	{
 		speed = 1.0f;
 		health = 100.0f;
-		//playerTransform = GetComponent<Transform> ();
+		healthSlider.normalizedValue = health;
 	}
 
 	public void SetMainScript(MainScript m, GameObject h, GameObject e, GameObject b) 
@@ -94,22 +92,29 @@ public class PlayerBehavior : MonoBehaviour {
 		healthbar = h;
 		healthbar = Instantiate(h, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
 		Text t = healthbar.GetComponentInChildren<Text> ();
+		healthSlider = healthbar.GetComponentInChildren<Slider> ();
 		if (!isPlayer1) {
+			t.text = "Player1 Health";
+			RectTransform rt = t.GetComponent<RectTransform> ();
+			rt.anchorMin = new Vector2 (0f, 1.0f);
+			rt.anchorMax = new Vector2 (0f, 1.0f);
+			rt.pivot = new Vector2 (0f, 1.0f);
+
+			RectTransform rs = healthSlider.GetComponent<RectTransform> ();
+			rs.anchorMin = new Vector2 (0f, 1.0f);
+			rs.anchorMax = new Vector2 (0f, 1.0f);
+			rs.pivot = new Vector2 (0f, 1.0f);
+		} else {
 			t.text = "Player2 Health";
 			RectTransform rt = t.GetComponent<RectTransform> ();
 			rt.anchorMin = new Vector2 (1.0f, 1.0f);
 			rt.anchorMax = new Vector2 (1.0f, 1.0f);
 			rt.pivot = new Vector2 (1.0f, 1.0f);
-
-			Slider s = healthbar.GetComponentInChildren<Slider> ();
-			RectTransform rs = s.GetComponent<RectTransform> ();
+			
+			RectTransform rs = healthSlider.GetComponent<RectTransform> ();
 			rs.anchorMin = new Vector2 (1.0f, 1.0f);
 			rs.anchorMax = new Vector2 (1.0f, 1.0f);
 			rs.pivot = new Vector2 (1.0f, 1.0f);
-
-			healthSlider = healthbar.GetComponentInChildren<Slider> ();
-		} else {
-			t.text = "Player1 Health";
 		}
 	}
 	
