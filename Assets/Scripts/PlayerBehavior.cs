@@ -68,8 +68,11 @@ public class PlayerBehavior : MonoBehaviour {
 
 	void checkDead()
 	{
-		if (health <= 0)
+		if (health <= 0) 
+		{
+			mainScript.DeclareLoser(isPlayer1);
 			mainScript.currentGameState = EGameState.EndGame;
+		}
 	}
 
 	public void reset() 
@@ -104,7 +107,8 @@ public class PlayerBehavior : MonoBehaviour {
 			rs.anchorMin = new Vector2 (0f, 1.0f);
 			rs.anchorMax = new Vector2 (0f, 1.0f);
 			rs.pivot = new Vector2 (0f, 1.0f);
-		} else {
+		} 
+		else {
 			t.text = "Player2 Health";
 			RectTransform rt = t.GetComponent<RectTransform> ();
 			rt.anchorMin = new Vector2 (1.0f, 1.0f);

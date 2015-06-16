@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public enum EGameState : byte
@@ -11,8 +12,9 @@ public enum EGameState : byte
 public class MainScript : MonoBehaviour
 {
 	public GameObject canvasOb, playerOb, bulletOb, HealthOb;
-	private GameObject canvas, player1, player2;
+	private GameObject canvas, player1, player2, p1winscanvas, p2winscanvas;
 	private PlayerBehavior player1Behavior, player2Behavior;
+	private bool isP1Winner;
 
 	public EGameState currentGameState;
 
@@ -23,6 +25,16 @@ public class MainScript : MonoBehaviour
 		player2 = Instantiate(playerOb, new Vector3(-2.0f, 0.5f, 0), Quaternion.identity) as GameObject;
 		canvas = Instantiate(canvasOb, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
 		canvas.SetActive (true);
+
+		p1winscanvas = Instantiate(canvasOb, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+		Text t1 = p1winscanvas.GetComponentInChildren<Text> ();
+		t1.text = "Player1 wins";
+		p1winscanvas.SetActive (false);
+
+		p2winscanvas = Instantiate(canvasOb, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
+		Text t2 = p2winscanvas.GetComponentInChildren<Text> ();
+		t2.text = "Player2 wins";
+		p2winscanvas.SetActive (false);
 
 		player1Behavior = player1.GetComponent<PlayerBehavior>();
 		player1Behavior.amIPlayer1 (true);
@@ -37,15 +49,14 @@ public class MainScript : MonoBehaviour
 
 	void Update()
 	{
+		if (Input.GetKey("escape"))
+			Application.Quit();
 		switch (currentGameState)
 		{
 		case EGameState.StartMenu:
 			if (Input.GetKeyDown(KeyCode.Return))
 			{
-				player1Behavior.reset();
-				player2Behavior.reset();
-
-				canvas.SetActive(false);
+				StartGame();
 				currentGameState = EGameState.InGame;
 			}
 			break;
@@ -53,26 +64,18 @@ public class MainScript : MonoBehaviour
 			InGame();
 			break;
 		case EGameState.EndGame:
-			player1Behavior.reset();
-			player2Behavior.reset();
-
-			canvas.SetActive (true);
+			StartCoroutine(EndGame());
 			currentGameState = EGameState.StartMenu;
 			break;
 		}
 	}
 
-	IEnumerator WaitForKeyDown(KeyCode keycode)
-	{
-		while (!Input.GetKeyDown(keycode)) 
-			yield return null;
-		canvas.SetActive(false);
-	}
-
 	void StartGame()
 	{
-		if (!canvas.activeSelf) canvas.SetActive (true);
-		StartCoroutine(WaitForKeyDown(KeyCode.Return));
+		player1Behavior.reset();
+		player2Behavior.reset();
+		
+		canvas.SetActive(false);
 	}
 
 	void InGame()
@@ -86,11 +89,31 @@ public class MainScript : MonoBehaviour
 		CheckPlayer2Input();
 	}
 
-	public void EndGame()
+	public void DeclareLoser(bool isPlayer1)
 	{
-		player1Behavior.reset ();
-		player2Behavior.reset ();
-		StartGame ();
+		if (isPlayer1)
+			isP1Winner = false;
+		else
+			isPlayer1 = true;
+	}
+
+	void DisplayWinner() 
+	{
+		if (isP1Winner)
+			p1winscanvas.SetActive (true);
+		else
+			p2winscanvas.SetActive (true);
+	}
+
+	IEnumerator EndGame() {
+		DisplayWinner();
+		yield return new WaitForSeconds(2.0f);
+		p1winscanvas.SetActive (false);
+		p2winscanvas.SetActive (false);
+		player1Behavior.reset();
+		player2Behavior.reset();
+		
+		canvas.SetActive (true);
 	}
 
 	void CheckPlayer1Input()
