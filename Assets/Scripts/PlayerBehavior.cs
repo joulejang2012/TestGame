@@ -7,6 +7,7 @@ public class PlayerBehavior : MonoBehaviour {
 	private GameObject healthbar, bullet, enemy;
 	private MainScript mainScript;
 	private Transform playerTransform, enemyTransform;
+	private Animation anim;
 	private Slider healthSlider;
 	private float speed, health;
 	private Vector3 lookVector;
@@ -16,6 +17,20 @@ public class PlayerBehavior : MonoBehaviour {
 	void Start() 
 	{
 		playerTransform = GetComponent<Transform> ();
+
+		if (GetComponent<NetworkView>().isMine)
+			playerTransform.position = new Vector3(2.0f, 0f, 0);
+
+		anim = GetComponent<Animation> ();
+		anim ["Idle"].wrapMode = WrapMode.Loop;
+		anim ["Fire"].wrapMode = WrapMode.Once;
+		anim ["Jump"].wrapMode = WrapMode.Once;
+		anim ["Reload"].wrapMode = WrapMode.Once;
+
+		anim ["Jump"].layer = 3;
+		anim ["Fire"].layer = 1;
+		anim ["Reload"].layer = 2;
+		anim.Stop();
 	}
 
 	// Update is called once per frame
@@ -23,26 +38,61 @@ public class PlayerBehavior : MonoBehaviour {
 	{
 		lookVector = enemyTransform.position - playerTransform.position;
 		lookVector.Normalize();
+		playerTransform.LookAt (enemyTransform.position);
 	}
 
-	public void MoveLeft() 
+	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info)
 	{
-		playerTransform.position = playerTransform.position + Time.deltaTime * (new Vector3(-speed, 0.0f, 0.0f));
+		Vector3 syncPosition = Vector3.zero;
+		if (stream.isWriting)
+		{
+			syncPosition = GetComponent<Rigidbody>().position;
+			stream.Serialize(ref syncPosition);
+		}
+		else
+		{
+			stream.Serialize(ref syncPosition);
+			GetComponent<Rigidbody>().position = syncPosition;
+		}
 	}
 
-	public void MoveRight() 
+//	public void MoveLeft() 
+//	{
+//		if (isSameXDirection(lookVector.x, -1.0f)) anim.CrossFade ("Walkfwd");
+//		else anim.CrossFade ("Walkbwd");
+//		playerTransform.position = playerTransform.position + Time.deltaTime * (new Vector3(-speed, 0.0f, 0.0f));
+//	}
+//
+//	public void MoveRight() 
+//	{
+//		if (isSameXDirection(lookVector.x, 1.0f)) anim.CrossFade ("Walkfwd");
+//		else anim.CrossFade ("Walkbwd");
+//		playerTransform.position = playerTransform.position + Time.deltaTime * (new Vector3(speed, 0.0f, 0.0f));
+//	}
+//
+//	public void MoveUp() 
+//	{
+//		playerTransform.position = playerTransform.position + Time.deltaTime * (new Vector3(0.0f, 0.0f, speed));
+//	}
+//
+//	public void MoveDown() 
+//	{
+//		playerTransform.position = playerTransform.position + Time.deltaTime * (new Vector3(0.0f, 0.0f, -speed));
+//	}
+
+	public void Idle() 
 	{
-		playerTransform.position = playerTransform.position + Time.deltaTime * (new Vector3(speed, 0.0f, 0.0f));
+		anim.CrossFade ("Idle");
 	}
 
-	public void MoveUp() 
+	public void Reload() 
 	{
-		playerTransform.position = playerTransform.position + Time.deltaTime * (new Vector3(0.0f, 0.0f, speed));
+		anim.CrossFade ("Reload");
 	}
 
-	public void MoveDown() 
+	public void Jump() 
 	{
-		playerTransform.position = playerTransform.position + Time.deltaTime * (new Vector3(0.0f, 0.0f, -speed));
+		anim.CrossFade ("Jump");
 	}
 
 	public void Fire()
@@ -53,6 +103,7 @@ public class PlayerBehavior : MonoBehaviour {
 		bulletCloneBehavior = bulletClone.GetComponent<BulletBehavior>();
 		bulletCloneBehavior.setLookVector(lookVector);
 		bulletCloneBehavior.Draw();
+		anim.CrossFade ("Fire");
 	}
 
 	void OnTriggerEnter(Collider other) 
@@ -77,9 +128,14 @@ public class PlayerBehavior : MonoBehaviour {
 
 	public void reset() 
 	{
-		speed = 1.0f;
+		speed = 0.73f;
 		health = 100.0f;
 		healthSlider.normalizedValue = health;
+	}
+	
+	bool isSameXDirection(float x1, float x2)
+	{
+		return ((x1<0) == (x2<0)); 
 	}
 
 	public void SetMainScript(MainScript m, GameObject h, GameObject e, GameObject b) 

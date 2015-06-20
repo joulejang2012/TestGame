@@ -21,8 +21,10 @@ public class MainScript : MonoBehaviour
 	// Use this for initialization
 	void Start() 
 	{
-		player1 = Instantiate(playerOb, new Vector3(2.0f, 0.5f, 0), Quaternion.identity) as GameObject;
-		player2 = Instantiate(playerOb, new Vector3(-2.0f, 0.5f, 0), Quaternion.identity) as GameObject;
+		//player1 = Instantiate(playerOb, new Vector3(2.0f, 0f, 0), Quaternion.Euler(0, 270, 0)) as GameObject;
+		//player2 = Instantiate(playerOb, new Vector3(-2.0f, 0f, 0), Quaternion.Euler(0, 180, 0)) as GameObject;
+		player1 = Instantiate(playerOb, new Vector3(2.0f, 0f, 0), Quaternion.identity) as GameObject;
+		player2 = Instantiate(playerOb, new Vector3(-2.0f, 0f, 0), Quaternion.identity) as GameObject;
 		canvas = Instantiate(canvasOb, new Vector3(0, 0, 0), Quaternion.identity) as GameObject;
 		canvas.SetActive (true);
 
@@ -118,19 +120,28 @@ public class MainScript : MonoBehaviour
 
 	void CheckPlayer1Input()
 	{
-		if (Input.GetKey(KeyCode.LeftArrow)) player1Behavior.MoveLeft();
-		if (Input.GetKey(KeyCode.RightArrow)) player1Behavior.MoveRight();
+		//if (Input.GetKeyDown(KeyCode.Keypad0)) player1Behavior.Fire();
+		if (Input.GetKeyDown(KeyCode.DownArrow)) player1Behavior.Fire();
+		else if (Input.GetKeyDown (KeyCode.LeftArrow)) player1Behavior.Reload ();
+		else if (Input.GetKeyDown (KeyCode.RightArrow)) player1Behavior.Jump ();
+		//if (Input.GetKey (KeyCode.LeftArrow)) player1Behavior.MoveLeft ();
+		//else if (Input.GetKey (KeyCode.RightArrow)) player1Behavior.MoveRight ();
 		//if (Input.GetKey(KeyCode.UpArrow)) player1Behavior.MoveUp();
 		//if (Input.GetKey(KeyCode.DownArrow)) player1Behavior.MoveDown();
-		if (Input.GetKeyDown(KeyCode.Keypad0)) player1Behavior.Fire();
+		else player1Behavior.Idle();
+
 	}
 
 	void CheckPlayer2Input()
 	{
-		if (Input.GetKey(KeyCode.A)) player2Behavior.MoveLeft();
-		if (Input.GetKey(KeyCode.D)) player2Behavior.MoveRight();
+		//if (Input.GetKeyDown(KeyCode.LeftShift)) player2Behavior.Fire();
+		if (Input.GetKeyDown(KeyCode.S)) player2Behavior.Fire();
+		else if (Input.GetKeyDown (KeyCode.A)) player2Behavior.Reload ();
+		else if (Input.GetKeyDown (KeyCode.D)) player2Behavior.Jump ();
+		//if (Input.GetKey(KeyCode.A)) player2Behavior.MoveLeft();
+		//else if (Input.GetKey(KeyCode.D)) player2Behavior.MoveRight();
 		//if (Input.GetKey(KeyCode.W)) player2Behavior.MoveUp();
 		//if (Input.GetKey(KeyCode.S)) player2Behavior.MoveDown();
-		if (Input.GetKeyDown(KeyCode.LeftShift)) player2Behavior.Fire();
+		else player2Behavior.Idle();
 	}
 }
